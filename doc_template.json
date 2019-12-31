@@ -1,0 +1,321 @@
+{
+  "template": "doc*",
+  "settings": {
+    "analysis": {
+      "filter": {
+        "russian_analyzer": {
+          "type": "stemmer",
+          "language": "russian"
+        },
+        "russian_stopwords": {
+          "type": "stop",
+          "stopwords": "_russian_"
+        },
+        "autocomplete_filter": {
+          "type": "edge_ngram",
+          "min_gram": 1,
+          "max_gram": 20
+        }
+      },
+      "analyzer": {
+        "morphology_analyzer": {
+          "filter": [
+            "standard",
+            "lowercase",
+            "russian_morphology",
+            "russian_stopwords",
+            "asciifolding"
+          ],
+          "tokenizer": "standard"
+        },
+        "ngram_default_analyzer": {
+          "filter": [
+            "standard",
+            "lowercase",
+            "russian_analyzer",
+            "russian_stopwords",
+            "asciifolding"
+          ],
+          "tokenizer": "trigram"
+        },
+        "russian_default_analyzer": {
+          "filter": [
+            "standard",
+            "lowercase",
+            "russian_analyzer",
+            "russian_stopwords",
+            "asciifolding"
+          ],
+          "tokenizer": "standard"
+        },
+        "ngram_morphology_analyzer": {
+          "filter": [
+            "standard",
+            "lowercase",
+            "russian_morphology",
+            "russian_stopwords",
+            "asciifolding"
+          ],
+          "tokenizer": "trigram"
+        },
+        "ngram_search": {
+          "tokenizer": "standard"
+        },
+        "autocomplete": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "autocomplete_filter"
+          ],
+          "char_filter": [
+            "html_strip"
+          ]
+        },
+        "html_text_analyzer": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase"
+          ],
+          "char_filter": [
+            "html_strip"
+          ]
+        },
+        "suffix_numeric_analyzer": {
+          "filter": [
+            "lowercase",
+            "reverse"
+          ],
+          "tokenizer": "whitespace",
+          "type": "custom",
+          "char_filter": [
+            "strip_phone_spec_chars",
+            "strip_non_numeric_seq"
+          ]
+        }
+      },
+      "tokenizer": {
+        "trigram": {
+          "token_chars": [
+            "letter",
+            "digit"
+          ],
+          "min_gram": "3",
+          "type": "edge_ngram",
+          "max_gram": "8"
+        }
+      },
+      "char_filter": {
+        "strip_phone_spec_chars": {
+          "type": "pattern_replace",
+          "pattern": "[-() ]",
+          "replacement": ""
+        },
+        "strip_non_numeric_seq": {
+          "type": "pattern_replace",
+          "pattern": "[^0-9]",
+          "replacement": " "
+        }
+      }
+    },
+    "number_of_shards": "5",
+    "number_of_replicas": "1"
+  },
+  "mappings": {
+    "article": {
+      "properties": {
+        "stemmedBody": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "updatedTime": {
+          "type": "long"
+        },
+        "keywords": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "index": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "section": {
+          "type": "boolean"
+        },
+        "clearBody": {
+          "type": "text",
+          "term_vector": "with_positions_offsets",
+          "fields": {
+            "body_stemmed": {
+              "analyzer": "russian_default_analyzer",
+              "type": "text"
+            },
+            "morphology_stemmed": {
+              "analyzer": "morphology_analyzer",
+              "type": "text"
+            },
+            "raw": {
+              "ignore_above": 256,
+              "type": "keyword"
+            },
+            "ngram_morphology": {
+              "term_vector": "with_positions_offsets",
+              "analyzer": "ngram_morphology_analyzer",
+              "type": "text"
+            },
+            "ngram_default": {
+              "analyzer": "ngram_default_analyzer",
+              "type": "text"
+            },
+            "autocomplete": {
+              "term_vector": "with_positions_offsets",
+              "analyzer": "autocomplete",
+              "type": "text"
+            },
+            "suffix_numeric": {
+              "term_vector": "with_positions_offsets",
+              "type": "text",
+              "analyzer": "suffix_numeric_analyzer"
+            }
+          }
+        },
+        "title": {
+          "type": "text",
+          "term_vector": "with_positions_offsets",
+          "fields": {
+            "morphology_stemmed": {
+              "analyzer": "morphology_analyzer",
+              "type": "text"
+            },
+            "title_stemmed": {
+              "analyzer": "russian_default_analyzer",
+              "type": "text"
+            },
+            "raw": {
+              "ignore_above": 256,
+              "type": "keyword"
+            },
+            "ngram_morphology": {
+              "term_vector": "with_positions_offsets",
+              "analyzer": "ngram_morphology_analyzer",
+              "type": "text"
+            },
+            "ngram_default": {
+              "analyzer": "ngram_default_analyzer",
+              "type": "text"
+            },
+            "autocomplete": {
+              "term_vector": "with_positions_offsets",
+              "analyzer": "autocomplete",
+              "type": "text"
+            },
+            "suffix_numeric": {
+              "term_vector": "with_positions_offsets",
+              "type": "text",
+              "analyzer": "suffix_numeric_analyzer"
+            }
+          }
+        },
+        "important": {
+          "type": "boolean"
+        },
+        "body": {
+          "type": "text",
+          "analyzer": "html_text_analyzer",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "createdTime": {
+          "type": "long"
+        },
+        "parentArticle": {
+          "type": "long"
+        },
+        "readCounter": {
+          "type": "long"
+        },
+        "id": {
+          "type": "long"
+        },
+        "lifeTime": {
+          "type": "long"
+        },
+        "elasticId": {
+          "type": "long"
+        },
+        "status": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "authorName": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "hasChildren": {
+          "type": "boolean"
+        },
+        "author_id": {
+          "type": "long"
+        },
+        "attachedUsers": {
+          "type": "long"
+        },
+        "avatar": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "borderRadius": {
+          "type": "long"
+        },
+        "confirmReading": {
+          "type": "boolean"
+        },
+        "attachedFiles": {
+          "type": "text",
+          "fields": {
+            "ngram_morphology": {
+              "term_vector": "with_positions_offsets",
+              "analyzer": "ngram_morphology_analyzer",
+              "type": "text"
+            }
+          }
+        }
+      }
+    }
+  }
+}
